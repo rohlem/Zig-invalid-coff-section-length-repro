@@ -1,7 +1,7 @@
-const sdl_c = @import("SDL-h");
+pub extern fn SDL_Init(flags: u32) c_int;
 
 fn t() void {unreachable;}
 pub fn main() !void {
 	 t();
-	 _ = sdl_c.SDL_Init(0);
+	 _ = SDL_Init(0);
 }

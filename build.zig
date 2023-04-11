@@ -16,21 +16,10 @@ pub fn linkWithSdl(exe: *std.build.LibExeObjStep, sdl_install_path: []const u8) 
     }
 }
 
-pub fn provideSdl(exe: *std.build.LibExeObjStep, target: std.zig.CrossTarget, optimize_for: std.builtin.Mode) !void {
+pub fn provideSdl(exe: *std.build.LibExeObjStep) !void {
     const b = exe.step.owner;
 
 	 const sdl_build_install_path = "SDL-prebuilt";
-    const translate_sdl_h_step = b.addTranslateC(.{
-        .source_file = .{.path = b.pathJoin(&.{sdl_build_install_path, "include/SDL2/SDL.h" })},
-        .target = target,
-        .optimize = optimize_for,
-    });
-
-	const sdl_c = b.createModule(.{
-        .source_file = .{ .generated = &translate_sdl_h_step.output_file },
-        .dependencies = &.{},
-    });
-    exe.addModule("SDL-h", sdl_c);
     try linkWithSdl(exe, sdl_build_install_path);
     const install_bin_files_step = b.addInstallBinFile(.{.path = b.pathJoin(&.{sdl_build_install_path, "/bin/SDL2d.dll"})}, "SDL2d.dll");
     b.getInstallStep().dependOn(&install_bin_files_step.step);
@@ -49,7 +38,7 @@ pub fn build(b: *std.Build) !void {
         .optimize = optimize_for,
     });
 
-    try provideSdl(exe, target, optimize_for);
+    try provideSdl(exe);
 
     exe.install();
 
